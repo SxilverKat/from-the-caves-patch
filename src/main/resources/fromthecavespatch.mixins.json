@@ -1,0 +1,19 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.sxilverr.fromthecavespatch.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "fromthecavespatch.refmap.json",
+  "mixins": [
+    "SpawnUpsideDownCrossMixin",
+    "ChestWithCrossMixin",
+    "CemeteryMarkerBlockEntityMixin"
+  ],
+  "client": [
+    "CaptureAudioProcedureMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
