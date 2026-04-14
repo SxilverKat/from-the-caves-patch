@@ -1,0 +1,12 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": {
+    "type": "forge:any"
+  },
+  "spawners": {
+    "type": "from_the_caves:iron_golem_possesed",
+    "weight": 20,
+    "minCount": 4,
+    "maxCount": 4
+  }
+}
