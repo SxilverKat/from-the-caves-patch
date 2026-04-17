@@ -28,21 +28,22 @@ public class PatchConfig {
             .define("reduceAudioSystemCalls", true);
 
     public static final ForgeConfigSpec.BooleanValue REMOVE_POSSESSED_PIG_SPAWN = BUILDER
-            .comment("There is a issue that may cause a lot of pigs to spawn. ",
-                    "When true, removes From The Caves' possessed pig from all biome spawn lists.",
+            .comment("There is an issue that may cause a lot of pigs to spawn.",
+                     "When true, removes From The Caves' possessed pig from all biome spawn lists.",
                      "This does not affect vanilla pig spawning, normal pigs are unaffected.",
                      "This config is disabled by default.")
             .define("removePossessedPigSpawn", false);
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
-    public static boolean patchEnabled;
-    public static boolean onlyLoadedChunks;
-    public static boolean reduceAudioCalls;
-    public static boolean removePossessedPigSpawn;
+    public static boolean patchEnabled = true;
+    public static boolean onlyLoadedChunks = true;
+    public static boolean reduceAudioCalls = true;
+    public static boolean removePossessedPigSpawn = false;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
+        if (event.getConfig().getSpec() != SPEC) return;
         patchEnabled = PATCH_ENABLED.get();
         onlyLoadedChunks = ONLY_LOADED_CHUNKS.get();
         reduceAudioCalls = REDUCE_AUDIO_CALLS.get();

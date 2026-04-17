@@ -30,13 +30,14 @@ public record PigSpawnRemover() implements BiomeModifier {
 
     static final Codec<PigSpawnRemover> CODEC = Codec.unit(PigSpawnRemover::new);
 
+    private static final ResourceLocation PIG_POSSESED_ID = new ResourceLocation("from_the_caves", "pig_possesed");
+
     @Override
     public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
         if (phase != Phase.REMOVE) return;
         if (!PatchConfig.patchEnabled || !PatchConfig.removePossessedPigSpawn) return;
 
-        EntityType<?> possessedPig = ForgeRegistries.ENTITY_TYPES.getValue(
-                new ResourceLocation("from_the_caves", "pig_possesed"));
+        EntityType<?> possessedPig = ForgeRegistries.ENTITY_TYPES.getValue(PIG_POSSESED_ID);
         if (possessedPig == null) return;
 
         var spawnSettings = builder.getMobSpawnSettings();

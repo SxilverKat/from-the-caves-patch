@@ -33,3 +33,6 @@ libs/*.jar
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Code AI settings
+.claude/

@@ -31,7 +31,6 @@ import java.util.Optional;
  */
 public class LoadedChunkStructureSearch {
 
-    @SuppressWarnings("unchecked")
     public static BlockPos search(ServerLevel level, TagKey<Structure> tag, BlockPos center, int radius) {
         int chunkRadius = Math.max(1, radius >> 4);
         int centerChunkX = SectionPos.blockToSectionCoord(center.getX());
