@@ -1,0 +1,28 @@
+package com.sxilverr.fromthecavespatch.mixin.events;
+
+import com.sxilverr.fromthecavespatch.PatchConfig;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(targets = "net.mcreator.fromthecaves.procedures.ChestEventsProcedure", remap = false)
+public class ChestEventsMixin {
+
+    @Inject(method = "onPlayerTick", at = @At("HEAD"), cancellable = true, remap = false)
+    private static void fromthecavespatch$cancelPlayer(TickEvent.PlayerTickEvent event, CallbackInfo ci) {
+        if (PatchConfig.patchEnabled && !PatchConfig.chestEvents) ci.cancel();
+    }
+
+    @Inject(method = "onServerTick", at = @At("HEAD"), cancellable = true, remap = false)
+    private static void fromthecavespatch$cancelServer(TickEvent.ServerTickEvent event, CallbackInfo ci) {
+        if (PatchConfig.patchEnabled && !PatchConfig.chestEvents) ci.cancel();
+    }
+
+    @Inject(method = "onPlayerInteractBlock", at = @At("HEAD"), cancellable = true, remap = false)
+    private static void fromthecavespatch$cancelInteract(PlayerInteractEvent.RightClickBlock event, CallbackInfo ci) {
+        if (PatchConfig.patchEnabled && !PatchConfig.chestEvents) ci.cancel();
+    }
+}
