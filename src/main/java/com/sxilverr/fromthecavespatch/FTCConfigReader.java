@@ -2,16 +2,6 @@ package com.sxilverr.fromthecavespatch;
 
 import java.lang.reflect.Method;
 
-/**
- * Reads state from From The Caves at runtime using reflection.
- *
- * We target FromTheCavesToggleManagerProcedure.isAllSpawnsEnabled() — this is the
- * global spawn toggle that FTC exposes. When it returns false, there is no reason
- * to run any spawn-related tick handler, so we can safely skip the expensive searches.
- *
- * Reflection is used because we don't want to force a hard compile-time dependency
- * on a specific FTC version. We look up the method once and cache it.
- */
 public class FTCConfigReader {
 
     private static volatile boolean initialized = false;
@@ -35,17 +25,13 @@ public class FTCConfigReader {
         }
     }
 
-    /**
-     * Returns true if From The Caves has spawns globally enabled.
-     * Returns true (safe default — don't skip) if the method cannot be found.
-     */
     public static boolean isSpawnsEnabled() {
         init();
         if (isAllSpawnsEnabledMethod == null) return true;
         try {
             return (boolean) isAllSpawnsEnabledMethod.invoke(null);
         } catch (Exception e) {
-            return true; // fail safe
+            return true;
         }
     }
 }

@@ -11,57 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Fixes memory leaks in From The Caves caused by static collections that
- * accumulate entries but never clean them up when entities die or players leave.
- *
- * Leaks fixed:
- *
- * SpawnUpsideDownCrossInVillageProcedure:
- *   - playerTickCounters (Map<String, Integer>) — grows as players join, never cleaned on logout
- *   - playerVillageSearchCooldown (Map<String, Long>) — same issue
- *
- * AnimalFearManagerProcedure:
- *   - lastSoundTick (Map<UUID, Long>) — every entity ever scanned leaves a permanent entry
- *   - villagersWithCross (Set<UUID>) — villager UUIDs never removed on death or despawn
- *   - illagersWithCross (Set<UUID>) — same for illagers
- *
- * CemeteryMarkerFlickerProcedure:
- *   - blockCooldowns (Map<BlockPos, Long>) — flickered block positions never removed when blocks are broken
- *
- * TorchFlickerNearMobProcedure:
- *   - blockCooldowns (Map<BlockPos, Long>) — same issue as CemeteryMarkerFlickerProcedure
- *
- * RightClickWCrossProcedure / RightClickWICrossProcedure:
- *   - lastSoundTime (Map<UUID, Long>) — player UUIDs accumulate, no logout cleanup in either class
- *
- * AngerSystemProcedure:
- *   - playerChunkTimes (Map<String, Map<ChunkPos, ChunkData>>) — per-player nested chunk tracking,
- *     never removed on logout; inner maps grow with every chunk a player visits
- *
- * ArmorStandEventsProcedure / WindowEventsProcedure / LightEventsProcedure /
- * NoteBlockEventsProcedure / ItemFrameEventsProcedure / ChestEventsProcedure /
- * TrapdoorEventsProcedure:
- *   - searchProgress (Map<UUID, SearchProgress>) — all seven procedures use the same pattern:
- *     a per-player incremental chunk-search state allocated via computeIfAbsent on every player
- *     tick and never removed when the player logs out
- *
- * CrossCompassBehaviorProcedure:
- *   - playerCache (Map<UUID, CompassCacheEntry>) — cached compass target per player, never cleared on logout
- *   - searchProgress (Map<UUID, SearchProgress>) — same incremental search pattern as above
- *
- * DeepDarknessDragProcedure:
- *   - playerCooldown (Map<UUID, Long>) — per-player spawn cooldown, no logout cleanup
- *   - grabbedPlayers (Map<UUID, UUID>) — player → dragging shadow entity, stays if player logs out mid-grab
- *
- * FlamingoHauntedProcedure:
- *   - lastCheckTime (Map<UUID, Long>) — per-player flamingo search throttle, never removed on logout
- *   - cachedFlamingoPos (Map<UUID, BlockPos>) — cached nearest flamingo block per player, same issue
- *
- * StepsAmbushProcedure:
- *   - activeMobs (Map<UUID, FROMTHECAVESSTEPSEntity>) — player → active steps ambush entity;
- *     removeFromActive() searches by entity value not player key, so logout leaves a stale entry
- */
 @Mod.EventBusSubscriber(modid = FromTheCavesPatch.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FTCLeakFixer {
 
@@ -233,10 +182,6 @@ public class FTCLeakFixer {
         }
     }
 
-    /**
-     * When a player logs out, remove their entries from the cross spawn procedure's
-     * player-keyed maps so they don't accumulate indefinitely.
-     */
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (!PatchConfig.patchEnabled) return;
@@ -264,10 +209,6 @@ public class FTCLeakFixer {
         removeFromMap(stepsActiveMobs, uuid);
     }
 
-    /**
-     * When any entity leaves the level (death, despawn, chunk unload), remove its
-     * UUID from the fear manager's collections so they don't grow forever.
-     */
     @SubscribeEvent
     public static void onEntityLeave(EntityLeaveLevelEvent event) {
         if (!PatchConfig.patchEnabled) return;
@@ -278,10 +219,6 @@ public class FTCLeakFixer {
         removeFromSet(illagersWithCross, uuid);
     }
 
-    /**
-     * When a block is broken, remove its position from the flicker procedure's cooldown
-     * map so broken torches/candles/campfires don't leave permanent entries.
-     */
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
         if (!PatchConfig.patchEnabled) return;

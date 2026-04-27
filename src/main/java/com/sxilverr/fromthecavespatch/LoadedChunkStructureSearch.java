@@ -16,19 +16,6 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Replaces From The Caves' village structure search with a version that only
- * looks at chunks already loaded in memory.
- *
- * The original call (ServerLevel.findNearestMapStructure) walks outward from the
- * player and calls getChunkBlocking on every chunk it visits, force-loading them
- * and stalling the server tick thread.
- *
- * Our version skips any chunk not already in memory and returns null if no loaded
- * chunk contains the target structure. The procedure treats null as "nothing found
- * this tick" and tries again next cycle — which is fine since it runs every 100
- * player ticks anyway.
- */
 public class LoadedChunkStructureSearch {
 
     @SuppressWarnings("unchecked")

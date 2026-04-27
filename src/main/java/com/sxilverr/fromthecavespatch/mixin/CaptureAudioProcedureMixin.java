@@ -6,21 +6,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-/**
- * Throttles CaptureAudioProcedure's audio capture retry so it doesn't call
- * AudioSystem.getMixerInfo() every client tick when capture is failing.
- *
- * When audio capture is not running (no microphone, wrong mixer, permissions
- * error, etc.), onClientTick calls AudioCapture.startCapture() every tick with
- * no cooldown. startCapture() calls AudioSystem.getMixerInfo() to scan audio
- * devices, which triggers Java's service loader and cascades into Forge's mod
- * classloader iterating JAR files on disk — I/O work on every tick.
- *
- * Fix: redirect the isCapturing() check to return true (skip retry) until a
- * 200-tick cooldown expires. Retries are attempted every 10 seconds instead of
- * 20 times per second. When capture is working normally, the cooldown resets
- * immediately and behaviour is identical to vanilla FTC.
- */
 @Mixin(targets = "net.mcreator.fromthecaves.procedures.CaptureAudioProcedure", remap = false)
 public class CaptureAudioProcedureMixin {
 
@@ -45,9 +30,9 @@ public class CaptureAudioProcedureMixin {
         }
         if (fromthecavespatch$retryCountdown > 0) {
             fromthecavespatch$retryCountdown--;
-            return true; // skip startCapture this tick
+            return true;
         }
         fromthecavespatch$retryCountdown = RETRY_INTERVAL;
-        return false; // allow startCapture to run
+        return false;
     }
 }

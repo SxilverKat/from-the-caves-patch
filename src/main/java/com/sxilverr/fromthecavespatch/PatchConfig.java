@@ -25,7 +25,7 @@ public class PatchConfig {
                      "attempts to open the microphone once every 10 seconds instead of every",
                      "client tick. Fixes a performance issue where players without a working",
                      "microphone trigger an OS-level audio device scan 20 times per second.")
-            .define("reduceAudioSystemCalls", true);
+            .define("reduceAudioCalls", true);
 
     public static final ForgeConfigSpec.BooleanValue REMOVE_POSSESSED_PIG_SPAWN = BUILDER
             .comment("There is a issue that may cause a lot of pigs to spawn. ",
@@ -34,12 +34,18 @@ public class PatchConfig {
                      "This config is disabled by default.")
             .define("removePossessedPigSpawn", false);
 
+    public static final ForgeConfigSpec.BooleanValue PROTECT_TAMED_CATS = BUILDER
+            .comment("When true, tamed cats are excluded from From The Caves' cat events.",
+                     "Fixes tamed cats running away and going missing. Wild cats are still affected.")
+            .define("protectTamedCats", true);
+
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
-    public static boolean patchEnabled;
-    public static boolean onlyLoadedChunks;
-    public static boolean reduceAudioCalls;
-    public static boolean removePossessedPigSpawn;
+    public static boolean patchEnabled = true;
+    public static boolean onlyLoadedChunks = true;
+    public static boolean reduceAudioCalls = true;
+    public static boolean removePossessedPigSpawn = false;
+    public static boolean protectTamedCats = true;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -47,5 +53,6 @@ public class PatchConfig {
         onlyLoadedChunks = ONLY_LOADED_CHUNKS.get();
         reduceAudioCalls = REDUCE_AUDIO_CALLS.get();
         removePossessedPigSpawn = REMOVE_POSSESSED_PIG_SPAWN.get();
+        protectTamedCats = PROTECT_TAMED_CATS.get();
     }
 }
